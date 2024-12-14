@@ -11,6 +11,8 @@ A. (Recommended) Install with conda:
 	This install will modify the `PATH` variable in your bashrc.
 	You need to open a new terminal for that path change to take place (to be able to find 'conda' in the next step).
 
+	其实在 vscode 中使用 conda 并不需要麻烦的在启动菜单打开 Anaconda powershell。直接开一个 vscode 的终端，新建一个 cmd 类型而不是 powershell 类型的终端即可使用 conda 命令。
+
 	2. Create a conda environment that will contain python 3:
 	```
 	conda create -n cs285 python=3.9
@@ -52,3 +54,22 @@ These can be resolved with:
 ```
 export MUJOCO_GL=egl
 ```
+
+还可能遇到这个错误：
+
+error: command 'swig.exe' failed: None
+
+需要将swig加入到环境变量中：
+
+先pip show swig，然后会显示swig这个包的安装路径，例如：d:\app\anaconda3\envs\cs285\lib\site-packages
+
+然后进入D:\app\anaconda3\envs\cs285\Scripts\，如果里面有swig.exe，就把D:\app\anaconda3\envs\cs285\Scripts\添加进环境变量的PATH里即可。
+
+还可能遇到这个错误：
+
+ERROR: Failed building wheel for box2d-py
+ERROR: ERROR: Failed to build installable wheels for some pyproject.toml based projects (box2d-py)
+
+那么就去https://visualstudio.microsoft.com/zh-hans/visual-cpp-build-tools/，选择 “使用C++的桌面开发” 下载
+
+然后重新运行 pip install -r requirements.txt 即可
