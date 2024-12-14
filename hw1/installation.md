@@ -18,7 +18,7 @@ A. (Recommended) Install with conda:
 
 	3. activate the environment (do this every time you open a new terminal and want to run code):
 	```
-	source activate cs285
+	conda activate cs285
 	```
 
 	4. Install the requirements into this conda environment
