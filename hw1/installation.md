@@ -11,7 +11,9 @@ A. (Recommended) Install with conda:
 	This install will modify the `PATH` variable in your bashrc.
 	You need to open a new terminal for that path change to take place (to be able to find 'conda' in the next step).
 
-	其实在 vscode 中使用 conda 并不需要麻烦的在启动菜单打开 Anaconda powershell。直接开一个 vscode 的终端，新建一个 cmd 类型而不是 powershell 类型的终端即可使用 conda 命令。
+	其实在 vscode 中使用 conda 并不需要麻烦的在启动菜单打开 Anaconda powershell。直接开一个 vscode 的终端
+	然后右下角切换到一个py程序页面，然后右下角把解释器选为cs285的虚拟环境
+	然后在终端里conda env list看看是不是cs285虚拟环境，如果是的话，就直接用就行了
 
 	2. Create a conda environment that will contain python 3:
 	```

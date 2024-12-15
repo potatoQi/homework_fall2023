@@ -9,21 +9,22 @@ from collections import OrderedDict
 import cv2
 import numpy as np
 import time
+import torch
 
 from cs285.infrastructure import pytorch_util as ptu
 
-
+# 采样一条长度为max_path_length的轨迹
 def sample_trajectory(env, policy, max_path_length, render=False):
     """Sample a rollout in the environment from a policy."""
-    
+
     # initialize env for the beginning of a new rollout
     ob =  env.reset() # TODO: initial observation after resetting the env
 
     # init vars
     obs, acs, rewards, next_obs, terminals, image_obs = [], [], [], [], [], []
     steps = 0
-    while True:
 
+    while True:
         # render image of the simulated env
         if render:
             if hasattr(env, 'sim'):
@@ -33,15 +34,23 @@ def sample_trajectory(env, policy, max_path_length, render=False):
             image_obs.append(cv2.resize(img, dsize=(250, 250), interpolation=cv2.INTER_CUBIC))
     
         # TODO use the most recent ob to decide what to do
-        ac = TODO # HINT: this is a numpy array
-        ac = ac[0]
+        # ac = TODO # HINT: this is a numpy array, use policy.get_action(ob)
+        # ac = ac[0]    这行话助教多写了我觉得
+        with torch.no_grad():
+            # 跟神经网络去交互通常要求是 tensor
+            ac = policy.forward(ptu.from_numpy(ob)) # 这里其实上就是执行actor的forward函数
+        # 跟 gym 去交互通常要求是 numpy
+        ac = ptu.to_numpy(ac)
 
         # TODO: take that action and get reward and next ob
-        next_ob, rew, done, _ = TODO
+        # next_ob, rew, done, _ = TODO
+
+        next_ob, rew, done, _ = env.step(ac)
         
         # TODO rollout can end due to done, or due to max_path_length
         steps += 1
-        rollout_done = TODO # HINT: this is either 0 or 1
+        # rollout_done = TODO # HINT: this is either 0 or 1
+        rollout_done = 1 if done or steps >= max_path_length else 0
         
         # record result of taking that action
         obs.append(ob)
@@ -64,6 +73,7 @@ def sample_trajectory(env, policy, max_path_length, render=False):
             "terminal": np.array(terminals, dtype=np.float32)}
 
 
+# 收集多条轨迹, 每次轨迹收集max_path_length个数据, 直到收集到的步数达到min_timesteps_per_batch
 def sample_trajectories(env, policy, min_timesteps_per_batch, max_path_length, render=False):
     """Collect rollouts until we have collected min_timesteps_per_batch steps."""
 
@@ -130,12 +140,14 @@ def compute_metrics(paths, eval_paths):
 
     # decide what to log
     logs = OrderedDict()
+    # 评估的相关指标
     logs["Eval_AverageReturn"] = np.mean(eval_returns)
     logs["Eval_StdReturn"] = np.std(eval_returns)
     logs["Eval_MaxReturn"] = np.max(eval_returns)
     logs["Eval_MinReturn"] = np.min(eval_returns)
     logs["Eval_AverageEpLen"] = np.mean(eval_ep_lens)
 
+    # 当次训练的相关指标
     logs["Train_AverageReturn"] = np.mean(train_returns)
     logs["Train_StdReturn"] = np.std(train_returns)
     logs["Train_MaxReturn"] = np.max(train_returns)
