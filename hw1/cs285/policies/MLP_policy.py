@@ -152,7 +152,7 @@ class MLPPolicySL(BasePolicy, nn.Module, metaclass=abc.ABCMeta):    # 该类继�
         # 使用mean和std来定义正态分布
         action_dist = torch.distributions.Normal(mean, std)
         # 这里要重采样, 这样才能支持反向传播
-        sampled_action = action_dist.rsample()
+        sampled_action = action_dist.rsample()  # [batch_size, ac_dim]
         return sampled_action
 
     def update(self, observations, actions):
